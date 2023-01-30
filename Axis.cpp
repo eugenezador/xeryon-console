@@ -23,17 +23,14 @@ void Axis::findIndex()
 
 bool Axis::isWithinTol_(int DPOS) {
     DPOS = std::abs(DPOS);
-    int PTO2 = getData("PTO2");
+//    int PTO2 = getData("PTO2");
+    int PTO2 = getSetting("PTO2");
     int EPOS = std::abs(getData("EPOS"));
+    std::cout << "x EPOS = " << EPOS << ":" << DPOS << ":" << PTO2 << std::endl;
     if (((DPOS - PTO2) <= EPOS) && (EPOS <= (DPOS + PTO2))) {
         std::cout << "true isWithinTol_" << std::endl;
         return true;
     }
-
-//    std::cout << "Dpos = " << DPOS << std::endl << "PTO2 = " << PTO2 << std::endl
-//              << "EPOS = " << EPOS << std::endl;
-
-//    std::cout << "false isWithinTol_" << std::endl;
     return false;
 }
 
@@ -164,13 +161,17 @@ void Axis::sendSettings()
 {
     char cmd[64];
     for (auto const& item : settings_)
+    {
         sendCommand_(item.first.c_str(), item.second);
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+    }
     sendCommand_(stage_->getEncoderResolutionCommand());
 }
 
 int Axis::applySettingsMultipliers_(std::string tag, int value)
 {
-    if (tag == "MAMP" || tag == "OSFA" || tag == "OFSB" || tag == "AMPL" || tag == "MAM2")
+    if (tag == "MAMP" || tag == "OSFA" || tag == "OFSB" || tag == "AMPL" || tag == "MAM2"|| tag == "MAM3")
         // Use amplitude multiplier.
         value *= stage_->getAmplitudeMultiplier();
     else if (tag == "PHAC" || tag == "PHAS")
@@ -178,11 +179,11 @@ int Axis::applySettingsMultipliers_(std::string tag, int value)
     else if (tag ==	"SSPD" || tag == "MSPD")
         // In the settigns file, SSPD is in mm/s ==> gets translated to mu/s
         value *= stage_->getSpeedMultiplier();
-    else if (tag == "LLIM" || tag == "RLIM" || tag == "HLIM" || tag == "ZON1" || tag == "ZON2")
+    else if (tag == "LLIM" || tag == "RLIM" || tag == "HLIM" || tag == "ZON1" || tag == "ZON2" || tag == "ZON3")
         // These are given in mm and need to be converted to encoder units
        {
         value = Distance(value, Distance::MM) / stage_->getEncoderResolution();
-        std::cout << "encoder: " << stage_->getEncoderResolution() << std::endl;
+//        std::cout << "encoder: " << stage_->getEncoderResolution() << std::endl;
     }
     else if (tag == "POLI")
         def_poli_value_ = value;
@@ -248,7 +249,7 @@ void Axis::receiveData(std::string tag, int value)
 
     data_[tag] = value;
 
-    //std::cout << "Received: " << letter_ << " " << tag << " = " << value << std::endl;
+//    std::cout << "Received: " << letter_ << " " << tag << " = " << value << std::endl;
 
     // This uses "EPOS" as an indicator that a new round of data is coming in.
     if (tag == "EPOS")
