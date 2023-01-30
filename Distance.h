@@ -1,6 +1,11 @@
 #ifndef DISTANCE_H
 #define DISTANCE_H
 
+// Eugene
+#include <QString>
+#define _PI_   3.14159265358979323846264338327950288
+//
+
 class Distance
 {
     public:
@@ -27,6 +32,11 @@ class Distance
 
         operator long double() const { return nm_; }
 
+        Distance()
+        {
+            nm_ = 0;
+        }
+
         Distance(long double value, Type type)
         {
             switch (type) {
@@ -52,7 +62,43 @@ class Distance
             return -1;
         }
 
-    private:
+        // Eugene
+        //
+        void move_motor(long double degree_value, const QString &arg)
+        {
+            degree_to_nm(degree_value);
+
+            demention_choice(arg);
+        }
+
+        void degree_to_nm(long double degree_value)
+        {
+            long double rotor_radius = 16.0; // radius value in mm
+            nm_ = (_PI_ * rotor_radius * 1e-6 * degree_value) / 180.0;
+        }
+
+private:
+        void demention_choice(const QString &arg)
+        {
+            if(arg == "mm") {
+                nm_ *= 1000000.0;
+                return;
+            } else if(arg == "mu") {
+                nm_ *= 1000.0;
+                return;
+            }  else if(arg == "nm") {
+                return;
+            }  else if(arg == "inch") {
+                nm_ *= 25.4 * 1000000.0;
+                return;
+            }  else if(arg == "minch") {
+                nm_ *= 25.4 * 1000.0;
+                return;
+            }
+        }
+        //
+        //Eugene
+
         explicit Distance(long double nm) : nm_(nm) { }
 
         long double nm_;

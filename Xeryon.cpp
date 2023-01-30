@@ -165,8 +165,10 @@ void Xeryon::start()
     tcsetattr(port_fd_, TCSANOW, &options);
 
 #endif
+//    reset(); // IVAN EVGEIY VERSION
+//    std::this_thread::sleep_for(std::chrono::milliseconds(4000));
 	comm_thread_ = std::thread(&Xeryon::processData_, this);
-	reset();
+reset();
 }
 
 void Xeryon::stop()
@@ -193,7 +195,7 @@ void Xeryon::sendCommand(Axis * axis, const char * command)
 		n = snprintf(cmd, sizeof(cmd), "%s\n", command);
 	else
 		n = snprintf(cmd, sizeof(cmd), "%c:%s\n", axis->getLetter(), command);
-	// std::cout << "CMD: " << axis->getLetter() << ": " << cmd;
+//     std::cout << "CMD: " << axis->getLetter() << ": " << cmd;
 #if defined (_WIN32) || defined( _WIN64)
     DWORD nWritten;
     if (!WriteFile(port_handle_, cmd, n, &nWritten, NULL))
@@ -206,17 +208,14 @@ void Xeryon::sendCommand(Axis * axis, const char * command)
 #endif
 #if defined (__linux__) || defined(__APPLE__)
 
-
-//    sszie_t e = write(port_fd_, cmd, n);
-//    if (n < 0)
-//    {
-//        int err = errno;
-//        fprintf(stderr, '%s0, explain_errno_read(errnum, fd, data,
-//            data_size));
-//        exit(EXIT_FAILURE);
-//    }
-
-    if (write(port_fd_, cmd, n) != n)
+    int numWritten;
+    numWritten = write(port_fd_, cmd, n);
+//    while (errno!=0)
+    {
+    std::cout << "errno = " << errno << std::endl;
+//    numWritten = write(port_fd_, cmd, n);
+    }
+    if (numWritten != n)
     {
         std::cout << "port_fd_ = " << port_fd_ << std::endl;
         std::cout << "cmd = " << cmd << std::endl;
@@ -293,6 +292,7 @@ void Xeryon::readSettings()
 
 int Xeryon::readPort_(char * c, unsigned int timeout)
 {
+//    std::cout << "Im reading now" << std::endl;
 #if defined (_WIN32) || defined(_WIN64)
     DWORD n = 0;
     timeouts_.ReadTotalTimeoutConstant = timeout;
@@ -312,7 +312,11 @@ int Xeryon::readPort_(char * c, unsigned int timeout)
     if (rc == 0)
         return 0;
     else if (rc > 0) {
-        return read(port_fd_, c, 1);
+
+        ssize_t rvalue;
+        rvalue = read(port_fd_, c, 1);
+//        std::cout << "I have readen" << std::endl;
+        return rvalue;
     }
     return -1;
 #endif

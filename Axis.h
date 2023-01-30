@@ -8,6 +8,8 @@
 #include <ctime>
 #include <map>
 #include <unordered_set>
+#include <bitset>
+#include <iostream>
 
 const int DEFAULT_POLI_VALUE = 200;
 
@@ -55,7 +57,10 @@ class Axis
         bool isEncoderAtIndex() { return (data_["STAT"] & (1 << 7)); }
         bool isEncoderValid() { return (data_["STAT"] & (1 << 8)); }
         bool isSearchingIndex() { return (data_["STAT"] & (1 << 9)); }
-        bool isPositionReached() { return (data_["STAT"] & (1 << 10)); }
+        bool isPositionReached() {
+            std::bitset<32> x(data_["STAT"]);
+            std::cout <<"STAT bits: " << x << '\n';
+            return (data_["STAT"] & (1 << 10)); }
         bool isEncoderError() { return (data_["STAT"] & (1 << 12)); }
         bool isScanning() { return (data_["STAT"] & (1 << 13)); }
         bool isAtLeftEnd() { return (data_["STAT"] & (1 << 14)); }
