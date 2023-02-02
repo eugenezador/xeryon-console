@@ -18,12 +18,17 @@ int main() {
     printf("axis STAT %d\n", axisX->getData("STAT"));
 
 
-    Distance dist;
-    dist.move_motor(120, "mm");
+    //    Distance dist;
+    //    degree_to_Distance(120);
+    //    dist.move_motor(120, "mm");
 
-    axisX->setDPOS(dist);
-
-//    axisX->setDPOS(100_mu);
+    axisX->setDPOS(Distance::degree_to_Distance(92));
+    for (int i = 1;i<30*20;i++)
+    {
+    axisX->step(Distance::degree_to_Distance(0.05));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+}
+    //    axisX->setDPOS(100_mu);
 
 
     printf("2axis DPOS %d\n", axisX->getData("DPOS"));

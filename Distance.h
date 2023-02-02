@@ -2,7 +2,6 @@
 #define DISTANCE_H
 
 // Eugene
-#include <QString>
 #define _PI_   3.14159265358979323846264338327950288
 //
 
@@ -25,17 +24,23 @@ class Distance
         Distance operator+(Distance other) { return Distance(nm_ + other.nm_); }
         Distance operator-(Distance other) { return Distance(nm_ - other.nm_); }
         Distance operator-() { return Distance(-nm_); }
-        Distance operator=(Distance other) { return Distance(other.nm_); }
+//        Distance operator=(Distance other) { return Distance(other.nm_); }
         Distance operator=(long double d) { return Distance(d); }
         Distance operator+=(long double d) { return Distance(nm_ + d); }
         Distance operator-=(long double d) { return Distance(nm_ - d); }
 
         operator long double() const { return nm_; }
 
-        Distance()
-        {
-            nm_ = 0;
+        //
+//        Distance()
+//        {
+//            nm_ = 0;
+//        }
+
+        long double getDis() {
+            return nm_;
         }
+        //
 
         Distance(long double value, Type type)
         {
@@ -64,38 +69,21 @@ class Distance
 
         // Eugene
         //
-        void move_motor(long double degree_value, const QString &arg)
-        {
-            degree_to_nm(degree_value);
+//        void move_motor(long double degree_value, const QString &arg)
+//        {
+//            degree_to_nm(degree_value);
 
-            demention_choice(arg);
+//            demention_choice(arg);
+//        }
+
+        static Distance degree_to_Distance(long double degree_value)
+        {
+//            long double rotor_radius = 16.0; // radius value in mm
+//            nm_ = (_PI_ * rotor_radius * degree_value) / 180.0;
+            Distance vv(_PI_/180.0*degree_value*1000000,Distance::NM);
+            return vv;
         }
 
-        void degree_to_nm(long double degree_value)
-        {
-            long double rotor_radius = 16.0; // radius value in mm
-            nm_ = (_PI_ * rotor_radius * 1e-6 * degree_value) / 180.0;
-        }
-
-private:
-        void demention_choice(const QString &arg)
-        {
-            if(arg == "mm") {
-                nm_ *= 1000000.0;
-                return;
-            } else if(arg == "mu") {
-                nm_ *= 1000.0;
-                return;
-            }  else if(arg == "nm") {
-                return;
-            }  else if(arg == "inch") {
-                nm_ *= 25.4 * 1000000.0;
-                return;
-            }  else if(arg == "minch") {
-                nm_ *= 25.4 * 1000.0;
-                return;
-            }
-        }
         //
         //Eugene
 

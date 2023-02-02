@@ -195,7 +195,7 @@ void Xeryon::sendCommand(Axis * axis, const char * command)
 		n = snprintf(cmd, sizeof(cmd), "%s\n", command);
 	else
 		n = snprintf(cmd, sizeof(cmd), "%c:%s\n", axis->getLetter(), command);
-//     std::cout << "CMD: " << axis->getLetter() << ": " << cmd;
+     std::cout << "CMD: " << axis->getLetter() << ": " << cmd;
 #if defined (_WIN32) || defined( _WIN64)
     DWORD nWritten;
     if (!WriteFile(port_handle_, cmd, n, &nWritten, NULL))

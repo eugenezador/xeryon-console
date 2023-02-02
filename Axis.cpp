@@ -117,12 +117,21 @@ void Axis::setDPOS(Distance d)
 }
 
 void Axis::step(Distance d) {
-    Distance new_DPOS = 0_nm;
+    Distance new_DPOS(0,Distance::NM);
 
     if (was_valid_DPOS_)
-        new_DPOS = getDPOS() + d;
-    else
+    {
+
+//        new_DPOS = Distance(getDPOS().operator()(Distance::NM) + d(Distance::NM), Distance::NM);
         new_DPOS = getEPOS() + d;
+//        new_DPOS.getDis() = getDPOS().getDis() + d.getDis();
+        std::cout << __LINE__ << "  "<< getDPOS() << "  "<< d <<"  "<<new_DPOS << std::endl;
+    }
+    else
+    {
+        new_DPOS = getEPOS() + d;
+        std::cout << __LINE__ << "  "<< getEPOS() << "  "<<d <<"  "<<new_DPOS << std::endl;
+    }
        
     if (!stage_->isLinear()) {
         if (new_DPOS < 0)
@@ -182,7 +191,7 @@ int Axis::applySettingsMultipliers_(std::string tag, int value)
     else if (tag == "LLIM" || tag == "RLIM" || tag == "HLIM" || tag == "ZON1" || tag == "ZON2" || tag == "ZON3")
         // These are given in mm and need to be converted to encoder units
        {
-        value = Distance(value, Distance::MM) / stage_->getEncoderResolution();
+//        value = Distance(value, Distance::MM) / stage_->getEncoderResolution();
 //        std::cout << "encoder: " << stage_->getEncoderResolution() << std::endl;
     }
     else if (tag == "POLI")
